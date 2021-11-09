@@ -1,0 +1,120 @@
+#include <iostream>
+#include <iomanip>
+#include <climits>
+
+using namespace std;
+
+void change(int** massive, int n, int m);
+int max(int** massive, int n, int m);
+int min(int** massive, int n, int m);
+int count(int** massive, int n, int m, int value);
+
+int main()
+{ 
+	setlocale(LC_ALL, "");
+	int n = 4, m = 3;
+	int** two = new int* [n];
+	for (int i = 0; i < n; i++)
+		two[i] = new int[m];
+	cout << "введите элементы массива\n";
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			cin >> two[i][j];
+	cout << "\nновый массив!\n";
+	change(two, n, m);
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+			cout << setw(3) << two[i][j] << setw(3);
+		cout << endl;
+	}
+	for (int i = 0; i < n; i++)
+		delete[]two[i];
+	delete[] two;
+	system("pause>0");
+	return 0;
+}
+
+void change(int** massive, int n, int m)
+{
+	int temp;
+	int size_min = count(massive, n, m, min(massive, n, m));
+	int size_max = count(massive, n, m, max(massive, n, m));
+	int** indmin = new int* [size_min];
+	for (int i = 0; i < size_min; i++)
+		indmin[i] = new int[2];
+	int** indmax = new int* [size_max];
+	for (int i = 0; i < size_max; i++)
+		indmax[i] = new int[2];
+	int k = 0, l = 0;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+		{
+			if (massive[i][j] == min(massive, n, m))
+			{
+				indmin[k][0] = i;
+				indmin[k][1] = j;
+				k++;
+			}
+			if (massive[i][j] == max(massive, n, m))
+			{
+				indmax[l][0] = i;
+				indmax[l][1] = j;
+				l++;
+			}
+		}
+	if (size_min > size_max)
+	{
+		for (int i = 0; i < size_max; i++)
+		{
+			temp = massive[indmin[i][0]][indmin[i][1]];
+			massive[indmin[i][0]][indmin[i][1]] = massive[indmax[i][0]][indmax[i][1]];
+			massive[indmax[i][0]][indmax[i][1]] = temp;
+		}
+	}
+	else if (size_min <= size_max)
+	{
+		for (int i = 0; i < size_min; i++)
+		{
+			temp = massive[indmin[i][0]][indmin[i][1]];
+			massive[indmin[i][0]][indmin[i][1]] = massive[indmax[i][0]][indmax[i][1]];
+			massive[indmax[i][0]][indmax[i][1]] = temp;
+		}
+	}
+	for (int i = 0; i < size_max; i++)
+		delete[]indmax[i];
+	delete[] indmax;
+	for (int i = 0; i < size_min; i++)
+		delete[]indmin[i];
+	delete[] indmin;
+}
+
+int max(int** massive, int n, int m)
+{
+	int max = -10000;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			if (massive[i][j] > max)
+				max = massive[i][j];
+	return max;
+}
+
+int min(int** massive, int n, int m)
+{
+	int min = 10000;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			if (massive[i][j] < min)
+				min = massive[i][j];
+	return min;
+}
+
+int count(int** massive, int n, int m, int value)
+{
+	int cc = 0;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			if (massive[i][j] == value)
+				cc++;
+	return cc;
+}
