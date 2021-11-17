@@ -1,0 +1,120 @@
+1)	#include <iostream>
+#include <ctime>
+#include <iomanip>
+
+using namespace std;
+int count_neg_line(int** massive, int m, int number);
+int count_neg_col(int** massive, int n, int number);
+int maximum_from_mas(int* massive, int size, int* number);
+
+int main()
+{
+	srand(time(0));
+	setlocale(LC_ALL, "");
+	cout << "введите размер массива в формате строки-столбцы\n";
+	int n, m;
+	cin >> n >> m;
+	int** massive = new int* [m];
+	for (int i = 0; i < n; i++)
+		massive[i] = new int[m];
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < m; j++)
+			massive[i][j] = rand() % 10 - 5;
+	cout << "вот и массив\n";
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+			cout << setw(3) << massive[i][j] << setw(3);
+		cout << endl;
+	}
+	int* counter_mas_lines = new int[n];
+	int* counter_mas_col = new int[m];
+	for (int i = 0; i < n; i++)
+	{
+		counter_mas_lines[i] = count_neg_line(massive, m, i);
+	}
+	for (int i = 0; i < m; i++)
+	{
+		counter_mas_col[i] = count_neg_col(massive, n, i);
+	}
+	int* number_lines = new int[n];
+	int* number_col = new int[m];
+	for (int i = 0; i < n; i++)
+		number_lines[i] = -1;
+	for (int i = 0; i < m; i++)
+		number_col[i] = -1;
+	cout << endl;
+	if (maximum_from_mas(counter_mas_lines, n, number_lines) > maximum_from_mas(counter_mas_col, m, number_col))
+	{
+		if (maximum_from_mas(counter_mas_lines, n, number_lines) != 0)
+		{
+			for (int i = 0; i < n; i++)
+				if (number_lines[i] != -1)
+					cout << "в " << number_lines[i] << " строке наибольшее число отрицательных элементов" << endl;
+		}
+		else cout << "нет отрицательных элементов";
+	}
+	else if (maximum_from_mas(counter_mas_lines, n, number_lines) < maximum_from_mas(counter_mas_col, m, number_col))
+	{
+		if (maximum_from_mas(counter_mas_col, m, number_col) != 0)
+		{
+			for (int i = 0; i < m; i++)
+				if (number_col[i] != -1)
+					cout << "в " << number_col[i] << " столбце наибольшее число отрицательных элементов" << endl;
+		}
+		else cout << "нет отрицательных элементов";
+	}
+	else
+	{
+		if (maximum_from_mas(counter_mas_col, m, number_col) != 0 and maximum_from_mas(counter_mas_lines, n, number_lines) != 0)
+		{
+			for (int i = 0; i < n; i++)
+				if (number_lines[i] != -1)
+					cout << "в " << number_lines[i] << " строке наибольшее число отрицательных элементов" << endl;
+			for (int i = 0; i < m; i++)
+				if (number_col[i] != -1)
+					cout << "в " << number_col[i] << " столбце наибольшее число отрицательных элементов" << endl;
+		}
+		else cout << "нет отрицательных элементов";
+	}
+	for (int i = 0; i < n; i++)
+		delete[] massive[i];
+	delete[] massive;
+	delete[]counter_mas_lines;
+	delete[] counter_mas_col;
+	delete[] number_lines;
+	delete[] number_col;
+	system("pause>0");
+	return 0;
+}
+
+int count_neg_line(int** massive, int m, int number)
+{
+	int count = 0;
+	for (int j = 0; j < m; j++)
+		if (massive[number][j] < 0)
+			count++;
+	return count;
+}
+
+int count_neg_col(int** massive, int n, int number)
+{
+	int count = 0;
+	for (int i = 0; i < n; i++)
+		if (massive[i][number] < 0)
+			count++;
+	return count;
+}
+
+int maximum_from_mas(int* massive, int size, int* number)
+{
+	int max = 0;
+	for (int i = 0; i < size; i++)
+		if (massive[i] > max)
+			max = massive[i];
+	int k = 0;
+	for (int i = 0; i < size; i++)
+		if (massive[i] == max)
+			number[k++] = i;
+	return max;
+}
