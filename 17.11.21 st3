@@ -1,0 +1,156 @@
+#include <iostream>
+#include <cmath>
+#include <ctime>
+#include <iomanip>
+
+using namespace std;
+
+void get(int** massive, int size);
+void show(int** massive, int line, int col);
+int** delete_even(int** massive, int& line, int& col);
+int count_even(int** massive, int size);
+bool prime(int value);
+void divisors(int value, int& n, int& m);
+
+int main()
+{
+	srand(time(0));
+	setlocale(LC_ALL, "");
+	int size;
+	cout << "введите размер массива: ";
+	cin >> size;
+	if (size <= 10)
+	{
+		int** massive = new int* [size];
+		for (int i = 0; i < size; i++)
+			massive[i] = new int[size];
+		get(massive, size);
+		show(massive, size, size);
+		int line = size, col = size;
+		massive = delete_even(massive, line, col);
+		show(massive, line, col);
+		for (int i = 0; i < line; i++)
+			delete[] massive[i];
+		delete[]massive;
+	}
+	else cout << "размер массива превышает заданные границы\n";
+	cout << "done.";
+	system("pause>0");
+	return 0;
+}
+
+
+void get(int** massive, int size)
+{
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+			massive[i][j] = rand() % 20;
+}
+
+void show(int** massive, int line, int col)
+{
+	for (int i = 0; i < line; i++)
+	{
+		for (int j = 0; j < col; j++)
+		{
+			cout << setw(3) << massive[i][j] << setw(3);
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+int** delete_even(int** massive, int& line, int& col)
+{
+	int number = line * line - count_even(massive, line);
+	if (prime(number))
+	{
+		int* temp = new int[number];
+		int k = 0;
+		for (int i = 0; i < line; i++)
+			for (int j = 0; j < col; j++)
+				if (massive[i][j] % 2 != 0)
+					temp[k++] = massive[i][j];
+		for (int i = 0; i < line; i++)
+			delete[] massive[i];
+		delete[]massive;
+		line = 1;
+		col = number;
+		massive = new int* [line];
+		for (int i = 0; i < line; i++)
+			massive[i] = new int[col];
+		for (int i = 0; i < col; i++)
+			massive[0][i] = temp[i];
+		delete[] temp;
+	}
+	else
+	{
+		int temp_line = 0, temp_col = 0;
+		divisors(number, temp_line, temp_col);
+		int** temp = new int* [temp_line];
+		for (int i = 0; i < temp_line; i++)
+			temp[i] = new int[temp_col];
+		int l = 0, k = 0;
+		for (int i = 0; i < line; i++)
+		{
+			for (int j = 0; j < col; j++)
+				if (massive[i][j] % 2 != 0)
+				{
+					if (k % temp_col == 0 and k != 0)
+						l++;
+					temp[l][k % temp_col] = massive[i][j];
+					k++;
+				}
+		}
+		for (int i = 0; i < line; i++)
+			delete[] massive[i];
+		delete[]massive;
+		line = temp_line;
+		col = temp_col;
+		massive = new int* [line];
+		for (int i = 0; i < line; i++)
+			massive[i] = new int[col];
+		for (int i = 0; i < line; i++)
+			for (int j = 0; j < col; j++)
+				massive[i][j] = temp[i][j];
+		for (int i = 0; i < temp_line; i++)
+			delete[] temp[i];
+		delete[]temp;
+	}
+	return massive;
+}
+
+int count_even(int** massive, int size)
+{
+	int count = 0;
+	for (int i = 0; i < size; i++)
+		for (int j = 0; j < size; j++)
+			if (massive[i][j] % 2 == 0)
+				count++;
+	return count;
+}
+
+bool prime(int value)
+{
+	if (value > 1)
+	{
+		if (value % 2 == 0)
+			return value == 2;
+		int divisor = 3;
+		while (divisor * divisor <= value and value % divisor != 0)
+			divisor += 2;
+		return divisor * divisor > value;
+	}
+	else return false;
+}
+
+void divisors(int value, int& n, int& m)
+{
+	for (int i = 2; i <= value / 2; i++)
+		if (value % i == 0)
+		{
+			m = i;
+			n = value / i;
+			break;
+		}
+}
